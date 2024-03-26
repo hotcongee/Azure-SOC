@@ -1,11 +1,15 @@
 # Azure-SOC
 
-# Building a SOC + Honeynet in Azure (Live Traffic)
-![Cloud Honeynet / SOC](https://i.imgur.com/ZWxe03e.jpg)
+# SOC & HoneyNet in Azure (Live Traffic)
+![Azure Cloud](https://github.com/hotcongee/Azure-SOC/assets/107250466/8b5bd7ad-5cdc-412b-bdda-b2ff0fc14e6f)
+
+
 
 ## Introduction
 
-In this project, I build a mini honeynet in Azure and ingest log sources from various resources into a Log Analytics workspace, which is then used by Microsoft Sentinel to build attack maps, trigger alerts, and create incidents. I measured some security metrics in the insecure environment for 24 hours, apply some security controls to harden the environment, measure metrics for another 24 hours, then show the results below. The metrics we will show are:
+In this project, I built a live small scale SOC and honeynet in Azure. Log Analytics Workspace was used to ingest logs from various sources which is then leveraged by Microsoft Sentinel to build attack maps, trigger alerts, and create incidents. 
+Microsoft Defender for Cloud was used as a data source for Log Analytics Workspace and to assess the Virtual Machines configuration of regulatory frameworks/security controls.
+I measured some security metrics in the insecure environment for 24 hours, apply some security controls to harden the environment, measure metrics for another 24 hours. The metrics were collected on the environment post-remediation are:
 
 - SecurityEvent (Windows Event Logs)
 - Syslog (Linux Event Logs)
@@ -14,43 +18,65 @@ In this project, I build a mini honeynet in Azure and ingest log sources from va
 - AzureNetworkAnalytics_CL (Malicious Flows allowed into our honeynet)
 
 ## Architecture Before Hardening / Security Controls
-![Architecture Diagram](https://i.imgur.com/aBDwnKb.jpg)
-
-## Architecture After Hardening / Security Controls
-![Architecture Diagram](https://i.imgur.com/YQNa9Pp.jpg)
+![Azure before hardening](https://github.com/hotcongee/Azure-SOC/assets/107250466/162d60fc-f4df-4f54-affa-b5307cf3b591)
 
 The architecture of the mini honeynet in Azure consists of the following components:
 
 - Virtual Network (VNet)
 - Network Security Group (NSG)
 - Virtual Machines (2 windows, 1 linux)
-- Log Analytics Workspace
 - Azure Key Vault
 - Azure Storage Account
-- Microsoft Sentinel
+- Microsoft SQL Server
+- SQL Server Management Studio (SSMS)
+- Microsoft Entra ID
 
-For the "BEFORE" metrics, all resources were originally deployed, exposed to the internet. The Virtual Machines had both their Network Security Groups and built-in firewalls wide open, and all other resources are deployed with public endpoints visible to the Internet; aka, no use for Private Endpoints.
+The SOC utilised following tools, components and regulations:
+- Microsoft Sentinel (SIEM)
+- Microsoft Defender for Cloud (MDC)
+    - NIST SP 800-53 R5
+    - PCI DSS 3.2.1
+- Log Analytics Workspace (LAW)
+- Windows Event Viewer
+- Kusto Query Language (KQL)
 
-For the "AFTER" metrics, Network Security Groups were hardened by blocking ALL traffic with the exception of my admin workstation, and all other resources were protected by their built-in firewalls as well as Private Endpoint
+To collect these metrics, I deliberately configure the Network Security Group to allow all traffic without restrictions. All resources were originally deployed, exposed to the internet. The Virtual Machines had both their Network Security Groups and built-in firewalls wide open, and all other resources are deployed with public endpoints visible to the Internet.
 
 ## Attack Maps Before Hardening / Security Controls
-![NSG Allowed Inbound Malicious Flows](https://i.imgur.com/1qvswSX.png)<br>
-![Linux Syslog Auth Failures](https://i.imgur.com/G1YgZt6.png)<br>
-![Windows RDP/SMB Auth Failures](https://i.imgur.com/ESr9Dlv.png)<br>
+### NSG Allowed Inbound Malicious Flows
+![NSG Allowed Inbound Malicious Flows](https://github.com/hotcongee/Azure-SOC/assets/107250466/3f6d5715-65a9-4b3b-b610-98752f9de1ab)<br>
+### Linux Syslog Auth Failures
+![Linux Syslog Auth Failures](https://github.com/hotcongee/Azure-SOC/assets/107250466/ad0595db-8628-4199-85d2-49b21bfed3c6)<br>
+### MS SQL Server Authentication Failures
+![MS SQL Server Authentication Failures](https://github.com/hotcongee/Azure-SOC/assets/107250466/8dcc2ba3-baf9-404f-a6ed-d5bcb6e0cf89)<br>
+### Windows RDP/SMB Auth Failures
+![Windows RDP/SMB Auth Failures](https://github.com/hotcongee/Azure-SOC/assets/107250466/e791cabb-7ca3-429f-9965-c30f33596073)<br>
 
 ## Metrics Before Hardening / Security Controls
 
-The following table shows the metrics we measured in our insecure environment for 24 hours:
-Start Time 2023-03-15 17:04:29
-Stop Time 2023-03-16 17:04:29
+The following table shows the metrics I measured in our insecure environment for 24 hours:
+
+Start Time 18:22:20 07-03-2024
+
+Stop Time  18:22:20 07-03-2024
 
 | Metric                   | Count
 | ------------------------ | -----
-| SecurityEvent            | 19470
-| Syslog                   | 3028
-| SecurityAlert            | 10
-| SecurityIncident         | 348
-| AzureNetworkAnalytics_CL | 843
+| SecurityEvent            | 31546
+| Syslog                   | 384
+| SecurityAlert            | 21
+| SecurityIncident         | 213
+| AzureNetworkAnalytics_CL | 1418
+
+
+
+---------------------------------------------------------------------------
+
+## Architecture After Hardening / Security Controls
+![Azure after hardening](https://github.com/hotcongee/Azure-SOC/assets/107250466/516c07cf-9358-4a0e-95b8-f8f3d5f5198b)
+
+
+
 
 ## Attack Maps Before Hardening / Security Controls
 
@@ -58,17 +84,40 @@ Stop Time 2023-03-16 17:04:29
 
 ## Metrics After Hardening / Security Controls
 
-The following table shows the metrics we measured in our environment for another 24 hours, but after we have applied security controls:
-Start Time 2023-03-18 15:37
-Stop Time	2023-03-19 15:37
+The following table shows the metrics I measured in our environment for another 24 hours, but after I have applied security controls:
+
+Start Time 21:22:20 09-03-2024
+
+Stop Time  21:22:20 10-03-2024
 
 | Metric                   | Count
 | ------------------------ | -----
-| SecurityEvent            | 8778
+| SecurityEvent            | 20917
 | Syslog                   | 25
 | SecurityAlert            | 0
 | SecurityIncident         | 0
 | AzureNetworkAnalytics_CL | 0
+
+## Impact of Security Controls
+
+| Metric                   | Count
+| ------------------------ | -----
+| SecurityEvent            | 33.69%
+| Syslog                   | 93.49%
+| SecurityAlert            | 100%
+| SecurityIncident         | 100%
+| AzureNetworkAnalytics_CL | 100%
+
+## Simulated Attacks
+
+The attacks that were simulated in this project etiher using another Virtual Machines or manual triggering, they are:
+
+- Linux Brute Force Attempt
+- AAD Brute Force Success
+- Windows Brute Force Success
+- Malware Detection (EICAR Test File)
+- Privilege Escalation
+
 
 ## Conclusion
 
