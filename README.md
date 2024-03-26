@@ -73,7 +73,8 @@ Stop Time  18:22:20 07-03-2024
 ---------------------------------------------------------------------------
 
 ## Architecture After Hardening / Security Controls
-![Azure after hardening](https://github.com/hotcongee/Azure-SOC/assets/107250466/516c07cf-9358-4a0e-95b8-f8f3d5f5198b)
+![Azure after hardening](https://github.com/hotcongee/Azure-SOC/assets/107250466/16983717-eef0-49e9-8dfa-0206374c34dc)
+
 
 
 
